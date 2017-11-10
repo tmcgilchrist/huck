@@ -38,8 +38,7 @@ script:
 deploy:
   provider: hackage
   username: $HACKAGE_USERNAME
-  password:
-    secure: $HACKAGE_PASSWORD
+  password: $HACKAGE_PASSWORD
   on:
     repo: tmcgilchrist/huck
     tags: true
