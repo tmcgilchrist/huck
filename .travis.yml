@@ -1,4 +1,4 @@
-language: c
+language: generic
 sudo: false
 
 git:
@@ -36,6 +36,7 @@ script:
  - bin/travis_script
 
 deploy:
+  skip_cleanup: true
   provider: hackage
   username: $HACKAGE_USERNAME
   password: $HACKAGE_PASSWORD

@@ -1,6 +1,7 @@
-name:                  ambiata-huck
+name:                  huck
 version:               0.0.1
 license:               BSD3
+license-file:          LICENSE
 author:                Tim McGilchrist <timmcgil@gmail.com>
 maintainer:            Tim McGilchrist <timmcgil@gmail.com>
 copyright:             (c) 2017 Tim McGilchrist 
@@ -14,6 +15,10 @@ description:
             .
             'Cause just like in the classic mis-adventure, Tom doesn't really pull his weight.
             So Huck is gathering all the toml parsers and making them betterer.
+
+source-repository head
+  type: git
+  location: git://github.com/tmcgilchrist/huck.git
 
 library
   build-depends:
