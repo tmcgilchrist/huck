@@ -41,8 +41,10 @@ library
   exposed-modules:
                     Huck
                     Huck.Data
+                    Huck.Data.Token
+                    Huck.Position
                     Huck.Prelude                    
-
+                    Huck.Lexer
 test-suite test
   type:
                     exitcode-stdio-1.0
@@ -59,9 +61,10 @@ test-suite test
   build-depends:
                       base                            >= 3          && < 5
                     , unordered-containers            == 0.2.*
-                    , megaparsec                      == 5.*
+                    , megaparsec
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
+                    , huck
                     , time             
 
 
@@ -80,5 +83,8 @@ test-suite test-io
 
   build-depends:
                       base                            >= 3          && < 5
+                    , megaparsec
+                    , resourcet                       == 1.*
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
+                    , huck

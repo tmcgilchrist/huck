@@ -24,6 +24,7 @@ module Huck.Prelude (
   , Word64
   -- ** Real
   , fromIntegral
+  , toRational
   , fromRational
 
   , Double
@@ -43,12 +44,14 @@ module Huck.Prelude (
   -- ** Applicative
   , Applicative (..)
   , (<**>)
+  , replicateM
   -- ** Alternative
   , Alternative (..)
   , asum
   -- ** Monad
   , Monad (..)
   , join
+  , when
   -- ** MonadPlus
   , MonadPlus (..)
   , guard
@@ -133,6 +136,8 @@ import           Control.Monad as Monad (
          , guard
          , join
          , msum
+         , when
+         , replicateM
          )
 import           Control.Monad.IO.Class (
            MonadIO (..)
@@ -230,6 +235,7 @@ import           GHC.Types as Types (
 import           GHC.Real as Real (
            fromIntegral
          , fromRational
+         , toRational
          )
 #if MIN_VERSION_base(4,9,0)
 import           GHC.Stack (HasCallStack)
