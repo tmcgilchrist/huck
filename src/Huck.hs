@@ -1,5 +1,9 @@
 --
--- This is an industrial strength TOML parser library.
+-- An industrial strength TOML parser library.
 --
 {-# LANGUAGE NoImplicitPrelude #-}
-module Huck where
+module Huck (
+    module X
+  ) where
+
+import           Huck.Data as X
