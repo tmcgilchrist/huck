@@ -45,6 +45,7 @@ library
                     Huck.Position
                     Huck.Prelude                    
                     Huck.Lexer
+                    Huck.Parser
 test-suite test
   type:
                     exitcode-stdio-1.0

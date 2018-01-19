@@ -5,11 +5,13 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.Huck.Util (
     lex
+  , parse
   ) where
 
+import           Huck.Data
 import           Huck.Data.Token
 import           Huck.Lexer
--- import           Huck.NewParser
+import           Huck.Parser
 import           Huck.Position
 import           Huck.Prelude
 import           Data.Text
@@ -21,6 +23,6 @@ lex =
   first Mega.parseErrorPretty .
     Mega.parse tokens "qc"
 
--- parse :: [Positioned Token] -> Either String (TomlDocument Position)
--- parse =
---   first Mega.parseErrorPretty . Mega.parse parseTomlDocument "qc"
+parse :: [Positioned Token] -> Either String (TomlDocument Position)
+parse =
+  first Mega.parseErrorPretty . Mega.parse parseTomlDocument "qc"
