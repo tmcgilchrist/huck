@@ -17,8 +17,10 @@ import           Huck.Prelude
 
 genParsableText :: Gen Text
 genParsableText =
-  Gen.element ["a = 1 \nb = 2.2 \nc = \"some-value\" \nname = \"Lance Uppercut\" \ndob = 1979-05-27T07:32:00-08:00"]
-
+  Gen.element [
+    "a = 1 \nb = 2.2 \nc = \"some-value\" \nname = \"Lance Uppercut\" \ndob = 1979-05-27T07:32:00-08:00"
+  , "[header]\n a = 1"
+  ]
 genLexableText :: Gen Text
 genLexableText =
   Gen.element
@@ -41,6 +43,7 @@ genLexableText =
     , "bare-key"
     , "\"ʎǝʞ\""
     , "'quoted value'"
+    , "'key.thing'"
 
     -- string basic
     ,"\"I'm a string. \\\"You can quote me\\\". Name\\tJos\\u00E9\\nLocation\tSF.\""

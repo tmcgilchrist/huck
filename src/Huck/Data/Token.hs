@@ -57,7 +57,7 @@ renderToken = \case
   FLOAT d -> renderFloat d
   STRING r -> renderString r
   DATE (_u, _tz) -> "error: print a proper date time value"
-  LBRACK -> "[]"
+  LBRACK -> "["
   RBRACK -> "]"
   LBRACE -> "{"
   RBRACE -> "}"

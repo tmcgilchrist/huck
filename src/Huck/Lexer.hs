@@ -83,9 +83,12 @@ dotP :: Parser (Positioned Token)
 dotP = withPos (string "." *> pure DOT)
 
 stringP :: Parser (Positioned Token)
-stringP = withPos ((basic' <|> multilineBasic' <|> literal' <|> multilineLiteral' <|> raw) >>= pure . STRING)
+stringP =
+  withPos $
+    (basic' <|> multilineBasic' <|> literal' <|> multilineLiteral' <|> raw') >>= pure . STRING
+
   where
-    raw = RAW <$> basicKey
+    raw' = RAW <$> basicKey
     basic' = BASIC <$> basic
     multilineBasic' = BASIC_MULTI <$> multilineBasic
     literal' = LITERAL <$> literal

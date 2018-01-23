@@ -27,10 +27,11 @@ library
                     , ghc-prim                        == 0.5.*
                     , text                            == 1.2.*
                     , time                            >= 1.7        && < 1.9
-                    , megaparsec                      == 5.0.*
+                    , megaparsec                      == 5.3.*
                     , scientific                      == 0.3.*
                     , unordered-containers            == 0.2.*
                     , vector                          >= 0.10       && < 0.13
+                    , wl-pprint-annotated             == 0.1.*
 
   ghc-options:
                     -Wall
@@ -46,6 +47,8 @@ library
                     Huck.Prelude                    
                     Huck.Lexer
                     Huck.Parser
+                    Huck.Pretty
+
 test-suite test
   type:
                     exitcode-stdio-1.0

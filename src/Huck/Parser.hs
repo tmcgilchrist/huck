@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Huck.Parser (
     Parser
   , ParserError (..)
@@ -18,9 +19,9 @@ import qualified Data.Set as Set
 import           Data.Text (Text)
 import qualified Data.Text as T
 import           Data.Time (UTCTime(..), TimeZone)
+import qualified Data.Vector as V
 
 import           Huck.Data
-import           Huck.Data.Token
 import           Huck.Position
 import           Huck.Prelude
 
@@ -54,15 +55,19 @@ instance ShowErrorComponent ParserError where
 parseTomlDocument :: Parser s m => m (TomlDocument Position)
 parseTomlDocument = do
   -- TODO Add table parsing
-  -- top <- Mega.manyTill parseKeyValue _LBRACK
-  -- Mega.manyTill parseTable EOF
+  top <- Mega.many parseKeyValue
+  t <- Mega.many parseTable <* Mega.eof
+  pure . TomlDocument $ HM.union (HM.fromList top) (HM.fromList t)
 
-  TomlDocument . HM.fromList <$> Mega.many parseKeyValue <* Mega.eof
+parseTable :: Parser s m => m (Text, Toml Position)
+parseTable = do
+  header <- parseTableHeader
+  keys <- Mega.many parseKeyValue
+  pure . (,) (snd header) $ TTable (fst header) (HM.fromList keys)
 
--- parseTable :: Parser s m => m (Toml Position)
--- parseTable = do
---   header <- pToken LBRACK *> p
---   undefined
+parseTableHeader :: Parser s m => m (Position, Text)
+parseTableHeader =
+  Mega.between (pToken LBRACK) (pToken RBRACK) pHeader
 
 parseToml :: Parser s m => m (Toml Position)
 parseToml =
@@ -72,17 +77,29 @@ parseToml =
     , pLitBoolean
     , pLitString
     , pLitDate
+    , pLitArray
     ]
 
 parseKeyValue :: Parser s m => m (Text, Toml Position)
 parseKeyValue = do
   k <- parseKey
   void $ pToken EQUAL
-  v <- parseToml
-  pure (k, v)
+  (fmap (k,) parseToml) <|> parseTable
 
 parseKey :: Parser s m => m Text
 parseKey = fmap snd pKey
+
+pLitArray :: Parser s m => m (Toml Position)
+pLitArray = do
+  a <-  pToken $ LBRACK
+  h <- pThing
+  hs <- Mega.many (pToken COMMA *> pThing)
+  _ <- pToken $ RBRACK
+
+  pure $ TArray a (V.fromList (h:hs))
+
+  where
+    pThing = pLitString <|> pLitBoolean <|> pLitInteger <|> pLitFloat <|> pLitArray
 
 pLitString :: Parser s m => m (Toml Position)
 pLitString = uncurry TString <$> pString
@@ -100,14 +117,24 @@ pLitDate :: Parser s m => m (Toml Position)
 pLitDate =
   fmap (\(p, (u, t)) -> TDatetime p u t) pDate
 
--- pHeader :: Parser s m => m (Position, Text)
--- pHeader =
---   label "header literal" .
---   tryPosToken $ \case
---     STRING (RAW key) ->
---       Just key
---     _ ->
---       Nothing
+pHeader :: Parser s m => m (Position, Text)
+pHeader = label "header literal" $ do
+
+  x@(a:_) <- Mega.sepBy1 keyComponent (pToken DOT)
+
+  let b = snd <$> x
+  pure (fst a, T.intercalate "."  b)
+
+  where
+    keyComponent :: Parser s m => m (Position, Text)
+    keyComponent = tryPosToken $ \case
+      STRING (RAW key) ->
+        Just key
+      STRING (BASIC key) ->
+        Just key
+      _ ->
+        Nothing
+
 
 pKey :: Parser s m => m (Position, Text)
 pKey =
@@ -158,7 +185,6 @@ pString =
       Just . renderString $ str
     _ ->
       Nothing
-
 
 pToken :: Parser s m => Token -> m Position
 pToken tok0 =

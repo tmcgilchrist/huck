@@ -3,13 +3,21 @@ module Huck.Data (
     TomlDocument (..)
   , Toml (..)
   , emptyTomlDocument
+
+  -- * Tokens
+  , X.Tokens (..)
+  , X.Token (..)
+  , X.renderToken
+  , X.STRING (..)
+  , X.renderString
   ) where
 
 import           Data.HashMap.Strict (HashMap)
-import           Data.Text
+import           Data.Text (Text)
 import           Data.Time (UTCTime, TimeZone)
 import           Data.Vector (Vector)
 
+import qualified Huck.Data.Token as X
 import           Huck.Prelude
 
 newtype TomlDocument a =

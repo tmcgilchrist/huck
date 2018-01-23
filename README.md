@@ -17,3 +17,9 @@ Compatibility
 
 This is intended to be a [v0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md)
 compatible parser.
+
+
+TODO
+-------------
+ * pretty printing of Toml documents
+ *

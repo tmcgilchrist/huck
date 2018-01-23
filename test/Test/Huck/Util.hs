@@ -26,3 +26,7 @@ lex =
 parse :: [Positioned Token] -> Either String (TomlDocument Position)
 parse =
   first Mega.parseErrorPretty . Mega.parse parseTomlDocument "qc"
+
+parseText :: Text -> Either String (TomlDocument Position)
+parseText code =
+  lex code >>= parse
