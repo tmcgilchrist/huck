@@ -68,9 +68,10 @@ test-suite test
                     , megaparsec
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
+                    , hedgehog-corpus                 == 0.1.*
                     , huck
                     , time             
-
+                    , wl-pprint-annotated
 
 test-suite test-io
   type:

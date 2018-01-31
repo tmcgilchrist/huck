@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
+{-# OPTIONS_GHC -fno-warn-warnings-deprecations #-}
 module Huck.Data.Token (
     Tokens (..)
   , Token (..)
@@ -31,6 +32,7 @@ data Token
   | FLOAT Double
   | STRING STRING
   | DATE (UTCTime, TimeZone)
+  | COMMENT Text
   | LBRACK
   | RBRACK
   | LBRACE
@@ -64,6 +66,7 @@ renderToken = \case
   EQUAL -> "="
   EOF -> ""
   COMMA -> ","
+  COMMENT s -> "#" <> s <> "\n"
   DOT -> "."
 
 renderInt :: Int64 -> Text

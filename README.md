@@ -22,4 +22,5 @@ compatible parser.
 TODO
 -------------
  * pretty printing of Toml documents
- *
+ * roundtrip tests on pretty printer
+ * include BurntSushi suite of toml documents

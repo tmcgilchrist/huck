@@ -11,6 +11,9 @@ module Huck.Parser (
   , renderParserError
   , parseTomlDocument
   , parseToml
+
+  -- | Individual fragment parsers
+  , pLitDate
   ) where
 
 import qualified Data.HashMap.Strict as HM

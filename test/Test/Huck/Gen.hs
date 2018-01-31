@@ -4,16 +4,24 @@ module Test.Huck.Gen (
     genLexableText
   , genLexableTexts
   , genParsableText
+
+  , genToml
+  , genTokens
+  , genToken
   ) where
 
 import qualified Data.List.NonEmpty as NE
-import           Data.Text
+import           Data.Text (Text)
 
 import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
+import           Hedgehog.Corpus
 
+import           Huck
 import           Huck.Prelude
+
+import           Prelude ((^^), round, (/), (^), maxBound)
 
 genParsableText :: Gen Text
 genParsableText =
@@ -81,3 +89,35 @@ genLexableTexts :: Gen Text
 genLexableTexts = do
   ts <- Gen.nonEmpty (Range.linear 1 1024) genLexableText
   pure . mconcat . NE.toList . NE.intersperse " " $ ts
+
+genToml :: Gen (TomlDocument a)
+genToml = Gen.choice [
+    pure emptyTomlDocument
+  ]
+
+genTokens :: Gen [Token]
+genTokens = Gen.list (Range.linear 0 100) genToken
+
+genToken :: Gen Token
+genToken =
+  Gen.choice [
+      BOOL <$> Gen.bool
+    , INTEGER <$> Gen.int64 (Range.linear 0 maxBound)
+    , FLOAT . round6 <$> Gen.double (Range.exponentialFloat 0.0 9223372036854775807.9)
+    , STRING . RAW <$> Gen.element muppets
+    -- , DATE
+    , COMMENT <$> Gen.element agile
+
+    -- Punctuation
+    , pure LBRACK
+    , pure RBRACK
+    , pure LBRACE
+    , pure RBRACE
+    , pure EQUAL
+    , pure COMMA
+    , pure DOT
+    ]
+
+round6 :: Double -> Double
+round6 x =
+  fromInteger (round (x * (10 ^ (6 :: Int)))) / 10.0 ^^ (6 :: Int)

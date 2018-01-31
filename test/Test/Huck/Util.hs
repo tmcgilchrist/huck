@@ -6,10 +6,10 @@
 module Test.Huck.Util (
     lex
   , parse
+  , parseText
   ) where
 
 import           Huck.Data
-import           Huck.Data.Token
 import           Huck.Lexer
 import           Huck.Parser
 import           Huck.Position

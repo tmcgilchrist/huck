@@ -10,6 +10,8 @@ module Huck.Position (
     SrcInfo (..)
   , Position (..)
   , Positioned (..)
+
+  , emptyPosition
   ) where
 
 import           Huck.Prelude
@@ -52,3 +54,6 @@ toSourcePos = \case
     SourcePos ""
       (unsafePos $ fromIntegral line)
       (unsafePos $ fromIntegral col)
+
+emptyPosition :: Position
+emptyPosition = Position {posLine = 0, posColumn = 0}
