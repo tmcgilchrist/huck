@@ -1,6 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
+{-# OPTIONS_GHC -fno-warn-warnings-deprecations #-}
 module Huck.Data.Token (
     Tokens (..)
   , Token (..)
@@ -16,8 +17,8 @@ import qualified Data.Text.Lazy as Lazy
 import qualified Data.Text.Lazy.Builder as Lazy
 import qualified Data.Text.Lazy.Builder.Int as Lazy
 import qualified Data.Text.Lazy.Builder.RealFloat as Lazy
-import           Data.Time (UTCTime(..), TimeZone)
-
+import           Data.Time (UTCTime(..), TimeZone, utcToZonedTime)
+import qualified Data.Time.RFC3339 as RFC3339
 import           Huck.Prelude
 
 import           Text.Megaparsec (ShowToken(..))
@@ -31,6 +32,7 @@ data Token
   | FLOAT Double
   | STRING STRING
   | DATE (UTCTime, TimeZone)
+  | COMMENT Text
   | LBRACK
   | RBRACK
   | LBRACE
@@ -56,15 +58,19 @@ renderToken = \case
   INTEGER i -> renderInt i
   FLOAT d -> renderFloat d
   STRING r -> renderString r
-  DATE (_u, _tz) -> "error: print a proper date time value"
-  LBRACK -> "[]"
+  DATE (u, tz) -> renderDate u tz
+  LBRACK -> "["
   RBRACK -> "]"
   LBRACE -> "{"
   RBRACE -> "}"
   EQUAL -> "="
   EOF -> ""
   COMMA -> ","
+  COMMENT s -> "#" <> s <> "\n"
   DOT -> "."
+
+renderDate :: UTCTime -> TimeZone -> Text
+renderDate u tz = RFC3339.formatTimeRFC3339 $ utcToZonedTime tz u
 
 renderInt :: Int64 -> Text
 renderInt = fromBuilder . Lazy.decimal

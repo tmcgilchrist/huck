@@ -34,23 +34,23 @@ tokenise t = bimap (LexError . T.pack . show) id (Mega.parse tokens "" t)
 
 tokens :: Parser [Positioned Token]
 tokens =
-  manyTill (skipSpaceOrComment *> token) eof
+  manyTill (skipSpace *> token) eof
 
 token :: Parser (Positioned Token)
-token = skipSpaceOrComment *>
+token = skipSpace *> commentP <|>
     (boolP <|> Mega.try floatP <|> try dateTimeP <|> integerP
     <|> lbrackP <|> rbrackP <|> lbraceP <|> rbraceP
     <|> commaP <|> equalP <|> dotP
-    <|> stringP) <* skipSpaceOrComment
+    <|> stringP) <* skipSpace
 
-skipSpaceOrComment :: Parser ()
-skipSpaceOrComment =
+skipSpace :: Parser ()
+skipSpace =
   try (space *> void newline)
-  <|> commentP
   <|> space
 
-commentP :: Parser ()
-commentP = char '#' *> Mega.someTill Mega.asciiChar newline *> pure ()
+commentP :: Parser (Positioned Token)
+commentP = withPos
+  (char '#' *> Mega.someTill Mega.asciiChar newline >>= pure . COMMENT . T.pack)
 
 boolP :: Parser (Positioned Token)
 boolP = withPos (boolean >>= pure . BOOL)
@@ -83,9 +83,12 @@ dotP :: Parser (Positioned Token)
 dotP = withPos (string "." *> pure DOT)
 
 stringP :: Parser (Positioned Token)
-stringP = withPos ((basic' <|> multilineBasic' <|> literal' <|> multilineLiteral' <|> raw) >>= pure . STRING)
+stringP =
+  withPos $
+    (basic' <|> multilineBasic' <|> literal' <|> multilineLiteral' <|> raw') >>= pure . STRING
+
   where
-    raw = RAW <$> basicKey
+    raw' = RAW <$> basicKey
     basic' = BASIC <$> basic
     multilineBasic' = BASIC_MULTI <$> multilineBasic
     literal' = LITERAL <$> literal
