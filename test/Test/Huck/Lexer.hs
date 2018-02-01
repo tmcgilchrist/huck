@@ -6,13 +6,10 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.Huck.Lexer where
 
-import           Data.Text (Text)
-import qualified Data.Text as T
-
 import           Hedgehog
+import qualified Hedgehog.Gen as Gen
+import qualified Hedgehog.Range as Range
 
-import           Huck.Data
-import           Huck.Data.Token
 import           Huck.Prelude
 import           Huck.Position
 
@@ -29,9 +26,9 @@ prop_lexer_roundtrip_tokens = property $ do
   tokens <- forAll genTokens
   tripping tokens printTokens (\i -> (fmap . fmap) (\((:@) j _) -> j) $ lex i)
 
-  where
-    printTokens :: [Token] -> Text
-    printTokens = T.intercalate " " . fmap renderToken
+prop_lexer_date_roundtrip = property $ do
+  date <- forAll (Gen.list (Range.linear 0 10) genDateToken)
+  tripping date printTokens (\i -> (fmap . fmap) (\((:@) j _) -> j) $ lex i)
 
 return []
 tests :: IO Bool

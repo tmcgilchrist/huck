@@ -27,6 +27,7 @@ library
                     , ghc-prim                        == 0.5.*
                     , text                            == 1.2.*
                     , time                            >= 1.7        && < 1.9
+                    , timerep                         == 2.0.*
                     , megaparsec                      == 5.3.*
                     , scientific                      == 0.3.*
                     , unordered-containers            == 0.2.*
@@ -72,6 +73,7 @@ test-suite test
                     , huck
                     , time             
                     , wl-pprint-annotated
+
 
 test-suite test-io
   type:

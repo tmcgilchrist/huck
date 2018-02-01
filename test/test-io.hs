@@ -17,7 +17,7 @@ main = do
   --
   -- Normally we would exit with failure when tests fail using something like:
   --
-  unless (and results) $
+  unless (and results)
     System.Exit.exitFailure
   --
   -- But this project is designed to actually show test errors as an example so

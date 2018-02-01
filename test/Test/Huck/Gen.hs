@@ -8,20 +8,21 @@ module Test.Huck.Gen (
   , genToml
   , genTokens
   , genToken
+  , genDateToken
   ) where
 
 import qualified Data.List.NonEmpty as NE
 import           Data.Text (Text)
-
+import           Data.Time
 import           Hedgehog
+import           Hedgehog.Corpus
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import           Hedgehog.Corpus
 
 import           Huck
 import           Huck.Prelude
 
-import           Prelude ((^^), round, (/), (^), maxBound)
+import           Prelude ((^^), round, (/), (^), maxBound, toInteger)
 
 genParsableText :: Gen Text
 genParsableText =
@@ -105,7 +106,7 @@ genToken =
     , INTEGER <$> Gen.int64 (Range.linear 0 maxBound)
     , FLOAT . round6 <$> Gen.double (Range.exponentialFloat 0.0 9223372036854775807.9)
     , STRING . RAW <$> Gen.element muppets
-    -- , DATE
+    , DATE <$> ((,) <$> genUtcTime <*> genTimeZone)
     , COMMENT <$> Gen.element agile
 
     -- Punctuation
@@ -121,3 +122,24 @@ genToken =
 round6 :: Double -> Double
 round6 x =
   fromInteger (round (x * (10 ^ (6 :: Int)))) / 10.0 ^^ (6 :: Int)
+
+genDateToken :: Gen Token
+genDateToken = DATE <$> ((,) <$> genUtcTime <*> genTimeZone)
+
+genUtcTime :: Gen UTCTime
+genUtcTime = UTCTime <$> genDay <*> genDiffTime
+
+genDay :: Gen Day
+genDay =
+  let
+    day = Gen.int (Range.linear 1 29)
+    month = Gen.int (Range.linear 1 12)
+    year = toInteger <$> Gen.int (Range.linear 1980 2100)
+  in fromGregorian <$> year <*> month <*> day
+
+genDiffTime :: Gen DiffTime
+genDiffTime = secondsToDiffTime <$> (toInteger <$> Gen.int (Range.linear 1 2000))
+
+genTimeZone :: Gen TimeZone
+genTimeZone = pure utc
+-- TODO This should really be a range of valid timezones

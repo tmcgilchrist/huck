@@ -7,15 +7,20 @@ module Test.Huck.Util (
     lex
   , parse
   , parseText
+  , printTokens
   ) where
+
+import           Data.Text
+import qualified Data.Text as T
 
 import           Huck.Data
 import           Huck.Lexer
 import           Huck.Parser
 import           Huck.Position
 import           Huck.Prelude
-import           Data.Text
+
 import           Prelude (String)
+
 import qualified Text.Megaparsec as Mega
 
 lex :: Text -> Either String [Positioned Token]
@@ -30,3 +35,6 @@ parse =
 parseText :: Text -> Either String (TomlDocument Position)
 parseText code =
   lex code >>= parse
+
+printTokens :: [Token] -> Text
+printTokens = T.intercalate " " . fmap renderToken

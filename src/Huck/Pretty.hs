@@ -15,9 +15,9 @@ module Huck.Pretty (
 import           Data.HashMap.Strict (HashMap)
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           Data.Time (UTCTime, TimeZone, formatTime, defaultTimeLocale)
+import           Data.Time (UTCTime, TimeZone, utcToZonedTime)
+import qualified Data.Time.RFC3339 as RFC3339
 import           Data.Vector (Vector)
-
 import           Huck.Data
 import           Huck.Position
 import           Huck.Prelude
@@ -37,13 +37,12 @@ ppToml toml =
     TBoolean _ b -> ppBoolean b
     TArray _ a -> ppArray a
     TTable _ t -> ppTable t
-    TDatetime _ utc tz -> ppDateTime utc tz
+    TDatetime _ utc tz -> ppDateTime tz utc
     TComment _ s -> PP.text $ "#" <> T.unpack s
 
-ppDateTime :: UTCTime -> TimeZone -> Doc a
-ppDateTime utc tz =
-  PP.text (formatTime defaultTimeLocale "%F" utc) <+>
-  PP.text (formatTime defaultTimeLocale "%z" tz)
+ppDateTime :: TimeZone -> UTCTime -> Doc a
+ppDateTime tz =
+  PP.text . RFC3339.formatTimeRFC3339 . utcToZonedTime tz
 
 ppTable :: HashMap Text (Toml Position) -> Doc a
 ppTable _ = PP.text "error"
