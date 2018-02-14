@@ -5,21 +5,28 @@ module Test.Huck.Gen (
   , genLexableTexts
   , genParsableText
 
-  , genToml
+  -- | Lexer Token generators
   , genTokens
   , genToken
   , genDateToken
+
+  -- | Toml data generators
+  , genTomlDoc
+  , genDateToml
   ) where
 
+import qualified Data.HashMap.Strict as HM
 import qualified Data.List.NonEmpty as NE
 import           Data.Text (Text)
 import           Data.Time
+
 import           Hedgehog
 import           Hedgehog.Corpus
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 
 import           Huck
+import           Huck.Position
 import           Huck.Prelude
 
 import           Prelude ((^^), round, (/), (^), maxBound, toInteger)
@@ -30,6 +37,7 @@ genParsableText =
     "a = 1 \nb = 2.2 \nc = \"some-value\" \nname = \"Lance Uppercut\" \ndob = 1979-05-27T07:32:00-08:00"
   , "[header]\n a = 1"
   ]
+
 genLexableText :: Gen Text
 genLexableText =
   Gen.element
@@ -91,9 +99,31 @@ genLexableTexts = do
   ts <- Gen.nonEmpty (Range.linear 1 1024) genLexableText
   pure . mconcat . NE.toList . NE.intersperse " " $ ts
 
-genToml :: Gen (TomlDocument a)
-genToml = Gen.choice [
+-- TODO How to handle position inside a generator?
+-- Options:
+-- 1. ignore position and have an empty ()
+-- 2. have the same position for everything
+-- 3. carry state through generator to correctly build Position information
+genTomlDoc :: Gen (TomlDocument Position)
+genTomlDoc = Gen.choice [
     pure emptyTomlDocument
+  , (\(k,v) -> TomlDocument $ HM.singleton k v)  <$> genTomlBasic
+  ]
+
+-- | Generate a key / value pair
+genTomlBasic :: Gen (Text, Toml Position)
+genTomlBasic = do
+  name <- Gen.element waters
+  t <- genToml
+  pure (name, t)
+
+genToml :: Gen (Toml Position)
+genToml = Gen.choice [
+    TString <$> pure emptyPosition <*> Gen.element waters
+  , TInteger <$> pure emptyPosition <*> Gen.int64 (Range.linear 0 maxBound)
+  , TFloat <$> pure emptyPosition <*> (round6 <$> Gen.double (Range.exponentialFloat 0.0 9223372036854775807.9))
+  , TBoolean <$> pure emptyPosition <*> Gen.bool
+  , TDatetime <$> pure emptyPosition <*> genUtcTime <*> genTimeZone
   ]
 
 genTokens :: Gen [Token]
@@ -102,11 +132,12 @@ genTokens = Gen.list (Range.linear 0 100) genToken
 genToken :: Gen Token
 genToken =
   Gen.choice [
-      BOOL <$> Gen.bool
+      STRING . RAW <$> Gen.element muppets
     , INTEGER <$> Gen.int64 (Range.linear 0 maxBound)
     , FLOAT . round6 <$> Gen.double (Range.exponentialFloat 0.0 9223372036854775807.9)
-    , STRING . RAW <$> Gen.element muppets
+    , BOOL <$> Gen.bool
     , DATE <$> ((,) <$> genUtcTime <*> genTimeZone)
+
     , COMMENT <$> Gen.element agile
 
     -- Punctuation
@@ -122,6 +153,9 @@ genToken =
 round6 :: Double -> Double
 round6 x =
   fromInteger (round (x * (10 ^ (6 :: Int)))) / 10.0 ^^ (6 :: Int)
+
+genDateToml :: Gen (Toml ())
+genDateToml = TDatetime <$> pure () <*> genUtcTime <*> genTimeZone
 
 genDateToken :: Gen Token
 genDateToken = DATE <$> ((,) <$> genUtcTime <*> genTimeZone)

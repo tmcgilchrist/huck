@@ -4,6 +4,7 @@ import           System.Exit
 import           System.IO
 
 import qualified Test.IO.Huck.Lexer
+import qualified Test.IO.Huck.Parser
 
 main :: IO ()
 main = do
@@ -12,6 +13,7 @@ main = do
 
   results <- sequence [
       Test.IO.Huck.Lexer.tests
+    , Test.IO.Huck.Parser.tests
     ]
 
   --

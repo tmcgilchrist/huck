@@ -5,7 +5,6 @@ module Huck.Lexer (
     LexError (..)
   , tokenise
   , tokens
-  , commentP
   ) where
 
 import qualified Data.Char as C
@@ -483,7 +482,7 @@ datetime = do
         pure $ minutesToTimeZone (x $ xh * 60 + xm)
     ]
   let warp x = localTimeToUTC tz $ utcToLocalTime utc x
-  pure $ (warp $ UTCTime day timeofday, tz)
+  pure (warp $ UTCTime day timeofday, tz)
 
 date :: Parser Day
 date =  do

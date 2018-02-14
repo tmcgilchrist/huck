@@ -19,6 +19,7 @@ import qualified Data.Text.Lazy.Builder.Int as Lazy
 import qualified Data.Text.Lazy.Builder.RealFloat as Lazy
 import           Data.Time (UTCTime(..), TimeZone, utcToZonedTime)
 import qualified Data.Time.RFC3339 as RFC3339
+
 import           Huck.Prelude
 
 import           Text.Megaparsec (ShowToken(..))

@@ -2,11 +2,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.Huck.Util (
     lex
   , parse
   , parseText
+  , parseSnippet
+
   , printTokens
   ) where
 
@@ -35,6 +36,12 @@ parse =
 parseText :: Text -> Either String (TomlDocument Position)
 parseText code =
   lex code >>= parse
+
+parseSnippet :: Mega.ShowErrorComponent e
+             => Mega.Parsec e [Positioned Token] b
+             -> Text
+             -> Either String b
+parseSnippet f code = lex code >>= first Mega.parseErrorPretty . Mega.parse f "qc"
 
 printTokens :: [Token] -> Text
 printTokens = T.intercalate " " . fmap renderToken

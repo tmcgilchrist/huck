@@ -1,6 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -15,6 +13,7 @@ module Huck.Position (
   ) where
 
 import           Huck.Prelude
+
 import           Text.Megaparsec (ShowToken(..), Stream(..))
 import           Text.Megaparsec.Pos (SourcePos(..), unsafePos)
 

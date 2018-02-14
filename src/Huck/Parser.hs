@@ -13,6 +13,7 @@ module Huck.Parser (
   , parseToml
 
   -- | Individual fragment parsers
+  , parseTable
   , pLitDate
   ) where
 
@@ -57,18 +58,20 @@ instance ShowErrorComponent ParserError where
 
 parseTomlDocument :: Parser s m => m (TomlDocument Position)
 parseTomlDocument = do
-  -- TODO Add table parsing
-  top <- Mega.many parseKeyValue
+  _ <- Mega.many pComment
+  top <- Mega.many parseKeyValue <* Mega.optional pComment
   t <- Mega.many parseTable <* Mega.eof
-  pure . TomlDocument $ HM.union (HM.fromList top) (HM.fromList t)
+  -- TODO combine nested keys correctly.
+  --
+  pure . TomlDocument $ HM.union (HM.fromList top) (HM.fromList $ (\(x, y) ->  (T.intercalate "." x, y)) <$> t)
 
-parseTable :: Parser s m => m (Text, Toml Position)
+parseTable :: Parser s m => m ([Text], Toml Position)
 parseTable = do
   header <- parseTableHeader
-  keys <- Mega.many parseKeyValue
+  keys <- Mega.many parseKeyValue <* Mega.optional pComment
   pure . (,) (snd header) $ TTable (fst header) (HM.fromList keys)
 
-parseTableHeader :: Parser s m => m (Position, Text)
+parseTableHeader :: Parser s m => m (Position, [Text])
 parseTableHeader =
   Mega.between (pToken LBRACK) (pToken RBRACK) pHeader
 
@@ -84,21 +87,22 @@ parseToml =
     ]
 
 parseKeyValue :: Parser s m => m (Text, Toml Position)
-parseKeyValue = do
+parseKeyValue = label "key / value" $ do
   k <- parseKey
   void $ pToken EQUAL
-  (fmap (k,) parseToml) <|> parseTable
+  a <- fmap (k,) parseToml -- <|> parseTable
+  _ <- Mega.optional pComment
+  pure a
 
 parseKey :: Parser s m => m Text
 parseKey = fmap snd pKey
 
 pLitArray :: Parser s m => m (Toml Position)
-pLitArray = do
-  a <-  pToken $ LBRACK
+pLitArray = label "array literal" $ do
+  a <-  pToken LBRACK
   h <- pThing
   hs <- Mega.many (pToken COMMA *> pThing)
-  _ <- pToken $ RBRACK
-
+  _ <- pToken RBRACK
   pure $ TArray a (V.fromList (h:hs))
 
   where
@@ -120,13 +124,14 @@ pLitDate :: Parser s m => m (Toml Position)
 pLitDate =
   fmap (\(p, (u, t)) -> TDatetime p u t) pDate
 
-pHeader :: Parser s m => m (Position, Text)
+-- TODO This should be a NonEmpty list here
+pHeader :: Parser s m => m (Position, [Text])
 pHeader = label "header literal" $ do
 
   x@(a:_) <- Mega.sepBy1 keyComponent (pToken DOT)
 
   let b = snd <$> x
-  pure (fst a, T.intercalate "."  b)
+  pure (fst a, b)
 
   where
     keyComponent :: Parser s m => m (Position, Text)
@@ -137,7 +142,6 @@ pHeader = label "header literal" $ do
         Just key
       _ ->
         Nothing
-
 
 pKey :: Parser s m => m (Position, Text)
 pKey =
@@ -188,6 +192,16 @@ pString =
       Just . renderString $ str
     _ ->
       Nothing
+
+pComment :: Parser s m => m (Position, Text)
+pComment =
+  label "string literal" .
+  tryPosToken $ \case
+    COMMENT str ->
+      Just str
+    _ ->
+      Nothing
+
 
 pToken :: Parser s m => Token -> m Position
 pToken tok0 =
