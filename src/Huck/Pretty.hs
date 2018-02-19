@@ -16,7 +16,7 @@ import           Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HM
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           Data.Time (UTCTime, TimeZone, utcToZonedTime)
+import           Data.Time (TimeZone, UTCTime, utcToZonedTime)
 import qualified Data.Time.RFC3339 as RFC3339
 import           Data.Vector (Vector)
 

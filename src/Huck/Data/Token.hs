@@ -1,6 +1,6 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
 {-# OPTIONS_GHC -fno-warn-warnings-deprecations #-}
 module Huck.Data.Token (
     Tokens (..)
@@ -17,12 +17,12 @@ import qualified Data.Text.Lazy as Lazy
 import qualified Data.Text.Lazy.Builder as Lazy
 import qualified Data.Text.Lazy.Builder.Int as Lazy
 import qualified Data.Text.Lazy.Builder.RealFloat as Lazy
-import           Data.Time (UTCTime(..), TimeZone, utcToZonedTime)
+import           Data.Time (TimeZone, UTCTime (..), utcToZonedTime)
 import qualified Data.Time.RFC3339 as RFC3339
 
 import           Huck.Prelude
 
-import           Text.Megaparsec (ShowToken(..))
+import           Text.Megaparsec (ShowToken (..))
 
 newtype Tokens = Tokens { unTokens :: [Token] }
   deriving (Show, Eq)

@@ -1,8 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.IO.Huck.Lexer where
 
@@ -11,11 +9,12 @@ import           Control.Monad.Trans.Resource (runResourceT)
 import qualified Data.Text.IO as T
 
 import           Hedgehog
+
 import           Huck.Prelude
 
 import           System.IO (IO)
 
-import           Test.Huck.Util
+import           Test.Huck.Util (lex)
 
 prop_lexer_examples =
   let file = "test/data/supported.toml" in

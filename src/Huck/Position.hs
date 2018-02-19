@@ -14,8 +14,8 @@ module Huck.Position (
 
 import           Huck.Prelude
 
-import           Text.Megaparsec (ShowToken(..), Stream(..))
-import           Text.Megaparsec.Pos (SourcePos(..), unsafePos)
+import           Text.Megaparsec (ShowToken (..), Stream (..))
+import           Text.Megaparsec.Pos (SourcePos (..), unsafePos)
 
 -- | A single point in the source file.
 data Position = Position {

@@ -1,10 +1,11 @@
 import           Control.Monad (unless)
-import           System.Exit
-import           System.IO
 
+import           System.Exit (exitFailure)
+import           System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
+
+import qualified Test.Huck.Lenses
 import qualified Test.Huck.Lexer
 import qualified Test.Huck.Parser
-import qualified Test.Huck.Lenses
 
 main :: IO ()
 main = do

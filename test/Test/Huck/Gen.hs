@@ -29,7 +29,7 @@ import           Huck
 import           Huck.Position
 import           Huck.Prelude
 
-import           Prelude ((^^), round, (/), (^), maxBound, toInteger)
+import           Prelude (maxBound, round, toInteger, (/), (^), (^^))
 
 genParsableText :: Gen Text
 genParsableText =

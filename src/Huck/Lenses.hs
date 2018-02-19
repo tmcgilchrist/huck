@@ -1,13 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UndecidableInstances #-}
 module Huck.Lenses (
     _TString
   , _TInteger
@@ -20,12 +12,13 @@ module Huck.Lenses (
   , key
   ) where
 
-import           Control.Lens (Prism', prism, Traversal', ix)
+import           Control.Lens (Prism', Traversal', ix, prism)
 
 import           Data.HashMap.Strict (HashMap)
 import           Data.Text (Text)
-import           Data.Time (UTCTime, TimeZone)
+import           Data.Time (TimeZone, UTCTime)
 import           Data.Vector (Vector)
+
 import           Huck.Data
 import           Huck.Position
 import           Huck.Prelude

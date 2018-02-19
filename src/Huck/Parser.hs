@@ -1,10 +1,10 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeFamilies #-}
 module Huck.Parser (
     Parser
   , ParserError (..)
@@ -18,19 +18,18 @@ module Huck.Parser (
   ) where
 
 import qualified Data.HashMap.Strict as HM
-import           Data.List.NonEmpty (NonEmpty(..))
+import           Data.List.NonEmpty (NonEmpty (..))
 import qualified Data.Set as Set
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           Data.Time (UTCTime(..), TimeZone)
+import           Data.Time (TimeZone, UTCTime (..))
 import qualified Data.Vector as V
 
 import           Huck.Data
 import           Huck.Position
 import           Huck.Prelude
 
-import           Text.Megaparsec ( Dec, label
-                                 , ErrorComponent(..), ShowErrorComponent(..))
+import           Text.Megaparsec (Dec, ErrorComponent (..), ShowErrorComponent (..), label)
 import qualified Text.Megaparsec as Mega
 import           Text.Megaparsec.Prim (MonadParsec)
 

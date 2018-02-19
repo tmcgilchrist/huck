@@ -1,10 +1,9 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveTraversable #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TypeFamilies #-}
 module Huck.Data (
     TomlDocument (..)
@@ -26,10 +25,10 @@ import           Control.Lens
 
 import           Data.HashMap.Strict (HashMap)
 import           Data.Text (Text)
-import           Data.Time (UTCTime, TimeZone)
+import           Data.Time (TimeZone, UTCTime)
 import           Data.Vector (Vector)
 import qualified Huck.Data.Token as X
-import           Huck.Position (Position(..))
+import           Huck.Position (Position (..))
 import           Huck.Prelude
 
 newtype TomlDocument a =
