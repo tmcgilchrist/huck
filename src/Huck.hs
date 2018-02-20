@@ -7,3 +7,6 @@ module Huck (
   ) where
 
 import           Huck.Data as X
+
+import           Huck.Lenses as X
+import           Huck.Pretty as X

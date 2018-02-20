@@ -1,8 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.Huck.Lexer where
 
@@ -10,8 +8,8 @@ import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 
-import           Huck.Prelude
 import           Huck.Position
+import           Huck.Prelude
 
 import           System.IO (IO)
 
@@ -24,11 +22,11 @@ prop_lexer_roundtrip_samples = property $ do
 
 prop_lexer_roundtrip_tokens = property $ do
   tokens <- forAll genTokens
-  tripping tokens printTokens (\i -> (fmap . fmap) (\((:@) j _) -> j) $ lex i)
+  tripping tokens printTokens ((fmap . fmap) (\((:@) j _) -> j) . lex )
 
 prop_lexer_date_roundtrip = property $ do
   date <- forAll (Gen.list (Range.linear 0 10) genDateToken)
-  tripping date printTokens (\i -> (fmap . fmap) (\((:@) j _) -> j) $ lex i)
+  tripping date printTokens ((fmap . fmap) (\((:@) j _) -> j) . lex)
 
 return []
 tests :: IO Bool

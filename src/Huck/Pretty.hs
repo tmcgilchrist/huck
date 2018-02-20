@@ -13,22 +13,23 @@ module Huck.Pretty (
   ) where
 
 import           Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HM
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           Data.Time (UTCTime, TimeZone, utcToZonedTime)
+import           Data.Time (TimeZone, UTCTime, utcToZonedTime)
 import qualified Data.Time.RFC3339 as RFC3339
 import           Data.Vector (Vector)
+
 import           Huck.Data
-import           Huck.Position
 import           Huck.Prelude
 
 import           Text.PrettyPrint.Annotated.WL (Doc, (<+>))
 import qualified Text.PrettyPrint.Annotated.WL as PP
 
-ppTomlDoc :: TomlDocument Position -> Doc a
-ppTomlDoc doc = foldr (\b a -> ppToml b <+> a)  mempty (tomlDocument doc)
+ppTomlDoc :: TomlDocument a -> Doc a
+ppTomlDoc doc = ppTable (tomlDocument doc)
 
-ppToml :: Toml Position -> Doc a
+ppToml :: Toml a -> Doc a
 ppToml toml =
   case toml of
     TString _ t -> ppString t
@@ -44,15 +45,15 @@ ppDateTime :: TimeZone -> UTCTime -> Doc a
 ppDateTime tz =
   PP.text . RFC3339.formatTimeRFC3339 . utcToZonedTime tz
 
-ppTable :: HashMap Text (Toml Position) -> Doc a
-ppTable _ = PP.text "error"
+ppTable :: HashMap Text (Toml a) -> Doc a
+ppTable = HM.foldrWithKey (\key toml doc -> ppString key <+> PP.equals <+> ppToml toml <+> PP.line <+> doc) ""
 
-ppArray :: Vector (Toml Position) -> Doc a
+ppArray :: Vector (Toml a) -> Doc a
 ppArray a =
   PP.encloseSep PP.lbracket PP.rbracket PP.comma (fmap ppToml a)
 
 ppBoolean :: Bool -> Doc a
-ppBoolean = PP.pretty
+ppBoolean = bool (PP.text "false") (PP.text "true")
 
 ppFloat :: Double -> Doc a
 ppFloat = PP.pretty

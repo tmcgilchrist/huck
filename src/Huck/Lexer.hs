@@ -5,25 +5,23 @@ module Huck.Lexer (
     LexError (..)
   , tokenise
   , tokens
-  , commentP
   ) where
 
 import qualified Data.Char as C
 import           Data.Scientific (scientific, toBoundedRealFloat)
 import           Data.Text (Text)
 import qualified Data.Text as T
-import           Data.Time (UTCTime (..), Day (..), DiffTime )
+import           Data.Time (Day (..), DiffTime, UTCTime (..))
 import           Data.Time.Calendar (fromGregorianValid)
-import           Data.Time.LocalTime (TimeZone, utc, utcToLocalTime
-                                     , localTimeToUTC, minutesToTimeZone)
+import           Data.Time.LocalTime (TimeZone, localTimeToUTC, minutesToTimeZone, utc, utcToLocalTime)
 import           Huck.Data.Token
 import           Huck.Position
 
 import           Huck.Prelude
 import           Prelude (toEnum)
 
+import           Text.Megaparsec hiding (Token, string, token, tokens, (<|>))
 import qualified Text.Megaparsec as Mega
-import           Text.Megaparsec hiding ((<|>), string, tokens, token, Token)
 import           Text.Megaparsec.Text
 
 newtype LexError = LexError { renderLexError :: Text }
@@ -483,7 +481,7 @@ datetime = do
         pure $ minutesToTimeZone (x $ xh * 60 + xm)
     ]
   let warp x = localTimeToUTC tz $ utcToLocalTime utc x
-  pure $ (warp $ UTCTime day timeofday, tz)
+  pure (warp $ UTCTime day timeofday, tz)
 
 date :: Parser Day
 date =  do

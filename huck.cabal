@@ -33,6 +33,7 @@ library
                     , unordered-containers            == 0.2.*
                     , vector                          >= 0.10       && < 0.13
                     , wl-pprint-annotated             == 0.1.*
+                    , lens                            >= 4.6        && < 5.0
 
   ghc-options:
                     -Wall
@@ -49,6 +50,7 @@ library
                     Huck.Lexer
                     Huck.Parser
                     Huck.Pretty
+                    Huck.Lenses
 
 test-suite test
   type:
@@ -70,6 +72,7 @@ test-suite test
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
                     , hedgehog-corpus                 == 0.1.*
+                    , hedgehog-checkers               == 0.1.* 
                     , huck
                     , time             
                     , wl-pprint-annotated
@@ -90,8 +93,11 @@ test-suite test-io
 
   build-depends:
                       base                            >= 3          && < 5
+                    , lens
                     , megaparsec
-                    , resourcet                       == 1.*
+                    , resourcet                       >= 1.1        && <= 1.1.9
+                    -- FIXME Version 1.1.10 of resourceT introduced `unliftio-core` which messes
+                    -- with IO tests in hedgehog. 
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
                     , huck
