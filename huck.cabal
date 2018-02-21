@@ -49,6 +49,9 @@ library
                     Huck.Prelude                    
                     Huck.Lexer
                     Huck.Parser
+                    Huck.Parser.HashMap
+                    Huck.Parser.Data
+                    Huck.Parser.Control
                     Huck.Pretty
                     Huck.Lenses
 
