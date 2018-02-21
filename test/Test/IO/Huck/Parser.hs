@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 module Test.IO.Huck.Parser where
 
@@ -10,8 +10,8 @@ import           Control.Monad.Trans.Resource (runResourceT)
 import qualified Data.Text.IO as T
 
 import           Hedgehog
-import           Huck.Prelude
 import           Huck.Lenses
+import           Huck.Prelude
 
 import           System.IO (IO)
 
@@ -31,9 +31,11 @@ prop_lenses =
     r <-  evalEither $ parseText str
 
     (r ^? key "owner" . _TTable . ix "name" . _TString,
-     r ^? key "servers.alpha" . _TTable . ix "ip" . _TString,
-     r ^? key "servers.beta" . _TTable . ix "ip" . _TString) ===
-      (Just "\"Lance Uppercut\"", Just "\"10.0.0.1\"", Just "\"10.0.0.2\"")
+     r ^? key "servers" . _TTable . ix "alpha" . _TTable . ix "ip" . _TString,
+     r ^? key "servers". _TTable . ix "beta" . _TTable . ix "ip" . _TString) ===
+      (Just "\"Lance Uppercut\""
+      , Just "\"10.0.0.1\""
+      , Just "\"10.0.0.2\"")
 
 -- TODO This should work after naming of nested tables is fixed
 --  r ^? key "servers" . _TTable . ix "alpha" . _TTable . ix "ip" . _TString === Just "10.0.0.1"
