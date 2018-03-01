@@ -1,7 +1,9 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Huck.Pretty (
-    ppTomlDoc
+    pretty
+  , ppToText
+  , ppTomlDoc
   , ppToml
   , ppDateTime
   , ppTable
@@ -25,6 +27,12 @@ import           Huck.Prelude
 
 import           Text.PrettyPrint.Annotated.WL (Doc, (<+>))
 import qualified Text.PrettyPrint.Annotated.WL as PP
+
+pretty :: TomlDocument a -> Text
+pretty = ppToText . ppTomlDoc
+
+ppToText :: Doc a -> Text
+ppToText = T.pack . PP.display . PP.renderPrettyDefault
 
 ppTomlDoc :: TomlDocument a -> Doc a
 ppTomlDoc doc = ppTable (tomlDocument doc)

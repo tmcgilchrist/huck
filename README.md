@@ -24,6 +24,6 @@ TODO
  * inline table support
  * pretty printing of Toml documents
  * roundtrip tests on pretty printer
- * include BurntSushi suite of toml documents
+ * include BurntSushi suite of toml documents (*)
  * whitespace preserving
  * Fixup top level import and haddocks (top level haddock documentation needs explicit exports)

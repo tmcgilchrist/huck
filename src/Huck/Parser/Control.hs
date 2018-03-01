@@ -45,8 +45,8 @@ parseTomlDocument = do
 
 parseTable :: Parser s m => m ([Text], Toml Position)
 parseTable = do
-  header <- parseTableHeader
-  keys <- Mega.many parseKeyValue <* Mega.optional pComment
+  header <- parseTableHeader <* Mega.skipMany pComment
+  keys <- Mega.many (parseKeyValue <* Mega.skipMany pComment)
   pure . (,) (snd header) $ TTable (fst header) (HM.fromList keys)
 
 parseTableHeader :: Parser s m => m (Position, [Text])
@@ -68,7 +68,7 @@ parseKeyValue :: Parser s m => m (Text, Toml Position)
 parseKeyValue = label "key / value" $ do
   k <- parseKey
   void $ pToken EQUAL
-  a <- fmap (k,) parseToml -- <|> parseTable
+  a <- (k,) <$> parseToml
   _ <- Mega.optional pComment
   pure a
 
@@ -78,13 +78,14 @@ parseKey = fmap snd pKey
 pLitArray :: Parser s m => m (Toml Position)
 pLitArray = label "array literal" $ do
   a <-  pToken LBRACK
-  h <- pThing
-  hs <- Mega.many (pToken COMMA *> pThing)
+  Mega.skipMany pComment
+  hs <- Mega.optional $ Mega.sepEndBy (pThing <* Mega.skipMany pComment) (pToken COMMA)
+  Mega.skipMany pComment
   _ <- pToken RBRACK
-  pure $ TArray a (V.fromList (h:hs))
+  pure $ TArray a (maybe V.empty V.fromList hs)
 
   where
-    pThing = pLitString <|> pLitBoolean <|> pLitInteger <|> pLitFloat <|> pLitArray
+    pThing = pLitString <|> pLitBoolean <|> pLitInteger <|> pLitFloat <|> pLitArray <|> pLitDate
 
 pLitString :: Parser s m => m (Toml Position)
 pLitString = uncurry TString <$> pString
@@ -173,13 +174,12 @@ pString =
 
 pComment :: Parser s m => m (Position, Text)
 pComment =
-  label "string literal" .
+  label "comment literal" .
   tryPosToken $ \case
     COMMENT str ->
       Just str
     _ ->
       Nothing
-
 
 pToken :: Parser s m => Token -> m Position
 pToken tok0 =

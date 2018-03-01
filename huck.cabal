@@ -104,3 +104,10 @@ test-suite test-io
                     , text
                     , hedgehog                        >= 0.5        && < 0.6
                     , huck
+                    , bytestring
+                    , tasty
+                    , tasty-hunit
+                    , aeson
+                    , file-embed
+                    , unordered-containers
+                    , vector
