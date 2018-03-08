@@ -22,9 +22,6 @@ prop_lexer_examples =
     code <- liftIO $ T.readFile file
     void . evalEither . lex $ code
 
-ts = let file = "test/data/supported.toml" in
-  T.readFile file
-
 return []
 tests :: IO Bool
 tests =

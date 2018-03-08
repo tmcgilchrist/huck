@@ -16,6 +16,7 @@ module Huck.Data (
   , X.renderToken
   , X.STRING (..)
   , X.renderString
+  , X.renderStringRaw
 
   , stripPositions
   , stripPosition

@@ -8,6 +8,7 @@ module Huck.Data.Token (
   , renderToken
   , STRING (..)
   , renderString
+  , renderStringRaw
   ) where
 
 import qualified Data.List.NonEmpty as NonEmpty
@@ -86,6 +87,14 @@ renderString = \case
   BASIC_MULTI ss -> "\"\"\"" <> ss <> "\"\"\""
   LITERAL ss -> "'" <> ss <> "'"
   LITERAL_MULTI ss -> "'''" <> ss  <> "'''"
+
+renderStringRaw :: STRING -> Text
+renderStringRaw = \case
+  RAW s -> s
+  BASIC s -> s
+  BASIC_MULTI ss -> ss
+  LITERAL ss -> ss
+  LITERAL_MULTI ss -> ss
 
 fromBuilder :: Lazy.Builder -> Text
 fromBuilder =

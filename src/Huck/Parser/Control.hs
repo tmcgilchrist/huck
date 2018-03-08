@@ -38,7 +38,6 @@ parseTomlDocument = do
   _ <- Mega.many pComment
   top <- Mega.many parseKeyValue <* Mega.optional pComment
   t <- Mega.many parseTable <* Mega.eof
-  -- TODO combine nested keys correctly.
 
   table <- foldM (\a b -> either (fail . T.unpack . renderHashMapError) pure $ insert b a) (HM.fromList top) t
   pure . TomlDocument $ table
@@ -168,7 +167,7 @@ pString =
   label "string literal" .
   tryPosToken $ \case
     STRING str ->
-      Just . renderString $ str
+      Just . renderStringRaw $ str
     _ ->
       Nothing
 

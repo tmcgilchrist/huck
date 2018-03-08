@@ -34,7 +34,6 @@ library
                     , vector                          >= 0.10       && < 0.13
                     , wl-pprint-annotated             == 0.1.*
                     , lens                            >= 4.6        && < 5.0
-
   ghc-options:
                     -Wall
 
@@ -79,7 +78,6 @@ test-suite test
                     , huck
                     , time             
                     , wl-pprint-annotated
-
 
 test-suite test-io
   type:

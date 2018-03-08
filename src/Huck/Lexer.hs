@@ -83,7 +83,7 @@ dotP = withPos (string "." *> pure DOT)
 stringP :: Parser (Positioned Token)
 stringP =
   withPos $
-    (basic' <|> multilineBasic' <|> literal' <|> multilineLiteral' <|> raw') >>= pure . STRING
+    (multilineBasic' <|> basic' <|> multilineLiteral' <|> literal' <|> raw') >>= pure . STRING
 
   where
     raw' = RAW <$> basicKey
@@ -375,7 +375,7 @@ multilineBasic =
   let
     triple = T.unpack <$> string "\"\"\""
   in
-    multiline (dropContinuation triple) (triple) $
+    multiline (dropContinuation triple) triple $
       dropContinuation tomlchar <|> dropContinuation linechar
 
 -- |
@@ -553,19 +553,20 @@ signed p = do
   pure $ if sign == Just '-' then negate n else n
 
 tomlchar :: Parser Char
-tomlchar =
+tomlchar = label "tomlchar" $
   choice [
       '\b' <$ try (string "\\b")
     , '\t' <$ try (string "\\t")
     , '\n' <$ try (string "\\n")
     , '\f' <$ try (string "\\f")
     , '\r' <$ try (string "\\r")
-    , '"' <$ try (string "\\\"")
+    , '"'  <$ try (string "\\\"")
+    , ' '  <$ try (string "\\")
     , '\\' <$ try (string "\\\\")
     , '\t' <$ try (string "\t")
-    , ' ' <$ try (string " ")
-    , try $ string "\\u" >> ((toEnum . toNum 0 16) <$> replicateM 4 hexDigitChar)
-    , try $ string "\\U" >> ((toEnum . toNum 0 16) <$> replicateM 8 hexDigitChar)
+    , ' '  <$ try (string " ")
+    , try $string "\\u" >> (toEnum . toNum 0 16 <$> replicateM 4 hexDigitChar)
+    , try $ string "\\U" >> (toEnum . toNum 0 16 <$> replicateM 8 hexDigitChar)
     , try $ satisfy (\c -> c > '\x001f' && c /= '"' && c /= '\\')
     ]
 
