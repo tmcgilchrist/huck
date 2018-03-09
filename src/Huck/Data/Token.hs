@@ -83,7 +83,7 @@ renderFloat = fromBuilder . Lazy.realFloat
 renderString :: STRING -> Text
 renderString = \case
   RAW s -> s
-  BASIC s -> s
+  BASIC s -> "\"" <> s <> "\""
   BASIC_MULTI ss -> "\"\"\"" <> ss <> "\"\"\""
   LITERAL ss -> "'" <> ss <> "'"
   LITERAL_MULTI ss -> "'''" <> ss  <> "'''"
