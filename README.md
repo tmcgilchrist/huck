@@ -27,3 +27,9 @@ TODO
  * include BurntSushi suite of toml documents
  * whitespace preserving
  * Fixup top level import and haddocks (top level haddock documentation needs explicit exports)
+
+STATUS
+-------------
+
+Unfinished, unmaintained and likely superseeded by [tomland](https://github.com/kowainik/tomland).
+Most everything I wanted to do with this library has been done in `tomland` either better or sooner that I could have.
